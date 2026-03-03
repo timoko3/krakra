@@ -1,0 +1,122 @@
+Turbo Assembler	 Version 4.1	    03/03/26 13:34:52	    Page 1
+krakra.asm
+
+
+
+      1	0000			     .model tiny
+      2	0000			     .code
+      3				     org 100h
+      4
+      5	      =000A		     MAX_PASSWORD_LENGTH equ 10d
+      6
+      7	0100			     Start:
+      8	0100  8C C8			 mov ax, cs
+      9	0102  8E D8			 mov ds, ax
+     10
+     11
+     12	0104  B1 00			 mov cl, 0d
+     13
+     14	0106  BE 001Fr			 mov si, offset	PASSWORD
+     15					 ; add si, 1d	; skip return carriage
+     16	0109  BF 0027r			 mov di, offset	INPUT_PASSWORD_STATUS
+     17
+     18	010C				 ??startCycle:
+     19	010C  80 F9 0A			 cmp cl, MAX_PASSWORD_LENGTH
+     20	010F  7F 1B			 jg ??endCycle
+     21	0111  B4 01			     mov ah, 01h
+     22	0113  CD 21			     int 21h
+     23
+     24	0115  3C 0D			     cmp al, 0dh
+     25	0117  74 13			     je	??endCycle
+     26
+     27	0119  8A 1C			     mov bl, [si]
+     28
+     29
+     30	011B  3A C3			     cmp al, bl
+     31	011D  74 08			     je	??correctSoFar
+     32	011F  8B 15				 mov dx, [di]
+     33	0121  BA 0000				 mov dx, 0d
+     34	0124  2E: 89 15				 mov cs:[di], dx
+     35	0127				     ??correctSoFar:
+     36
+     37	0127  46			     inc si
+     38	0128  FE C1			     inc cl
+     39	012A  EB E0			     jmp ??startCycle
+     40	012C				 ??endCycle:
+     41
+     42	012C  2E: 8B 15			 mov dx, cs:[di]
+     43	012F  F7 C2 0001		 test dx, 01h
+     44	0133  74 0A			 jz ??pswrdIncorrect
+     45	0135  BA 0000r			     mov dx, offset SUCCESS_MESSAGE
+     46	0138  B4 09			     mov ah, 09h
+     47	013A  CD 21			     int 21h
+     48	013C  EB 08 90			     jmp ??notIncorrect
+     49	013F				 ??pswrdIncorrect:
+     50
+     51	013F  BA 0010r			 mov dx, offset	UNSUCCESS_MESSAGE
+     52	0142  B4 09			 mov ah, 09h
+     53	0144  CD 21			 int 21h
+     54
+     55	0146				 ??notIncorrect:
+     56
+     57	0146  B8 4C00			 mov ax, 4C00h
+Turbo Assembler	 Version 4.1	    03/03/26 13:34:52	    Page 2
+krakra.asm
+
+
+
+     58	0149  CD 21			 int 21h
+     59
+     60	014B			     .data
+     61	0000  61 63 63 65 73 73	20+	 SUCCESS_MESSAGE       db 'access approved$'
+     62	      61 70 70 72 6F 76	65+
+     63	      64 24
+     64	0010  0D 61 63 63 65 73	73+	 UNSUCCESS_MESSAGE     db 0dh, 'access denied$'
+     65	      20 64 65 6E 69 65	64+
+     66	      24
+     67	001F  70 6C 74 72 73 68	6B+	 PASSWORD	       db 'pltrshk$'
+     68	      24
+     69	0027  01 24			 INPUT_PASSWORD_STATUS db 1d, '$'
+     70				     end Start
+Turbo Assembler	 Version 4.1	    03/03/26 13:34:52	    Page 3
+Symbol Table
+
+
+
+
+Symbol Name			  Type	 Value
+
+??CORRECTSOFAR			  Near	 DGROUP:0127
+??DATE				  Text	 "03/03/26"
+??ENDCYCLE			  Near	 DGROUP:012C
+??FILENAME			  Text	 "krakra  "
+??NOTINCORRECT			  Near	 DGROUP:0146
+??PSWRDINCORRECT		  Near	 DGROUP:013F
+??STARTCYCLE			  Near	 DGROUP:010C
+??TIME				  Text	 "13:34:52"
+??VERSION			  Number 040A
+@32BIT				  Text	 0
+@CODE				  Text	 DGROUP
+@CODESIZE			  Text	 0
+@CPU				  Text	 0101H
+@CURSEG				  Text	 _DATA
+@DATA				  Text	 DGROUP
+@DATASIZE			  Text	 0
+@FILENAME			  Text	 KRAKRA
+@INTERFACE			  Text	 000H
+@MODEL				  Text	 1
+@STACK				  Text	 DGROUP
+@WORDSIZE			  Text	 2
+INPUT_PASSWORD_STATUS		  Byte	 DGROUP:0027
+MAX_PASSWORD_LENGTH		  Number 000A
+PASSWORD			  Byte	 DGROUP:001F
+START				  Near	 DGROUP:0100
+SUCCESS_MESSAGE			  Byte	 DGROUP:0000
+UNSUCCESS_MESSAGE		  Byte	 DGROUP:0010
+
+Groups & Segments		  Bit Size Align  Combine Class
+
+DGROUP				  Group
+  _DATA				  16  0029 Word	  Public  DATA
+  _TEXT				  16  014B Word	  Public  CODE
+
